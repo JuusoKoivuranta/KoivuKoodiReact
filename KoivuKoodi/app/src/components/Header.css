@@ -1,11 +1,12 @@
 header {
-  background-color: #333;
+  background-color: #3A4D39;
   padding: 20px;
   text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .head-text {
-  color: #fff;
+  color: #ECE3CE;
   font-size: 2em;
 }
 
@@ -19,15 +20,18 @@ nav ul {
 
 nav li {
   margin: 10px;
-  border: 1px solid white;
+  border: 1px solid #ECE3CE;
   padding: 1vh;
+  border-radius: 4px;
+  transition: all 0.2s;
 }
 
 nav a {
-  color: #fff;
+  color: #ECE3CE;
   text-decoration: none;
 }
 
 nav a:hover {
-  text-decoration: underline;
+  text-decoration: none;
+  color: #d1c4b3;
 }

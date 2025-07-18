@@ -1,10 +1,12 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Header from './components/Header';
-import Home from './components/Home';
-import Gallery from './components/Gallery';
-import About from './components/About';
-import Hooks from './components/Hooks';
+import Home from './components/front-pages/Home';
+import Gallery from './components//gallery/Gallery';
+import Chess from './components/chess/Chess';
+import Chatroom from './components/chatroom/Chatroom';
+import Minesweeper from './components/minesweeper/Minesweeper';
+import About from './components/front-pages/About';
 
 const App = () => {
 
@@ -14,8 +16,10 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/gallery" element={<Gallery />} />
+        <Route path="/chess" element={<Chess />} />
+        <Route path="/chatroom" element={<Chatroom />} />
+        <Route path="/minesweeper" element={<Minesweeper />} />
         <Route path="/about" element={<About />} />
-        <Route path='/hooks' element={<Hooks />} />
       </Routes>
     </Router>
   );
