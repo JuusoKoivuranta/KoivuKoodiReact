@@ -1,0 +1,6 @@
+For GitHub logo, visit:
+https://github.com/logos
+
+1. Download the GitHub logo (white version for dark backgrounds)
+2. Save it as "github-logo.png" in this directory
+3. Make sure the image has a transparent background

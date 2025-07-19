@@ -1,9 +1,156 @@
-body {
+/* Keyframe animations - use unique names to avoid conflicts */
+@keyframes homePageFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes homePageTitleFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Scope all styles to only affect the Home component */
+.home-page-container {
     background-color: #739072;
 }
 
-.main {
+.home-page-container .main {
     text-align: center;
     color: #ECE3CE;
     padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.home-page-container h1 {
+    font-size: 3rem;
+    margin-bottom: 5px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: normal;
+    animation: homePageTitleFadeIn 1s ease-out forwards;
+}
+
+.home-page-container p {
+    font-size: 1.2rem;
+    margin-bottom: 40px;
+    font-family: Arial, Helvetica, sans-serif;
+    animation: homePageTitleFadeIn 1s ease-out 0.3s forwards;
+    opacity: 0;
+    animation-fill-mode: forwards;
+}
+
+.home-page-container .grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 40px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.home-page-container .grid-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 120px;
+    border: 2px solid #333;
+    border-radius: 32px;
+    background-color: #3A4D39;
+    text-decoration: none;
+    color: #ECE3CE;
+    font-size: 1.8rem;
+    font-weight: normal;
+    font-family: Arial, Helvetica, sans-serif;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+    animation: homePageFadeIn 0.6s ease-out;
+    animation-fill-mode: both;
+    opacity: 0;
+}
+
+.home-page-container .item-content {
+    z-index: 2;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+/* Background images for each link - they appear on hover */
+.home-page-container .grid-item::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1;
+    background-size: cover;
+    background-position: center;
+}
+
+/* Specific background for each item */
+.home-page-container .grid-item:nth-child(1) {
+    animation-delay: 0.3s;
+}
+.home-page-container .grid-item:nth-child(1)::before {
+    background-image: url('../../../public/images/gallery/photo1.jpg');
+}
+
+.home-page-container .grid-item:nth-child(2) {
+    animation-delay: 0.4s;
+}
+.home-page-container .grid-item:nth-child(2)::before {
+    background-image: url('../../../public/images/pieces/WhiteKing.webp');
+}
+
+.home-page-container .grid-item:nth-child(3) {
+    animation-delay: 0.5s;
+}
+.home-page-container .grid-item:nth-child(3)::before {
+    background-image: url('../../../public/images/gameplay/cogwheel.png');
+}
+
+.home-page-container .grid-item:nth-child(4) {
+    animation-delay: 0.6s;
+}
+.home-page-container .grid-item:nth-child(4)::before {
+    background-image: url('../../../public/images/minesweeper/bomb.png');
+}
+
+.home-page-container .grid-item:nth-child(5) {
+    animation-delay: 0.7s;
+}
+.home-page-container .grid-item:nth-child(5)::before {
+    background-image: url('../../../public/images/gallery/kilpisjarvi.jpg');
+}
+
+.home-page-container .grid-item:nth-child(6) {
+    animation-delay: 0.8s;
+}
+.home-page-container .grid-item:nth-child(6)::before {
+    background-image: url('../../../public/images/gameplay/cogwheel.png');
+}
+
+.home-page-container .grid-item:hover::before {
+    opacity: 0.2;
+}
+
+.home-page-container .grid-item:hover {
+    color: #333;
+    background-color: #ECE3CE;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }

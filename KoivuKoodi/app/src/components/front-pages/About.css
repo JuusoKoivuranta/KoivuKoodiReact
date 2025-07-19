@@ -1,0 +1,82 @@
+/* About page specific styles */
+@keyframes aboutPageFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.about-page-container {
+    background-color: #739072;
+    min-height: 100vh;
+}
+
+.about-main {
+    text-align: center;
+    color: #ECE3CE;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    animation: aboutPageFadeIn 0.8s ease-out;
+}
+
+.about-page-container h1 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: normal;
+    color: #ECE3CE;
+}
+
+.about-page-container p {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #ECE3CE;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+}
+
+.github-link {
+    display: inline-flex;
+    align-items: center;
+    background-color: #3A4D39;
+    color: #ECE3CE;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.github-link:hover {
+    background-color: #ECE3CE;
+    color: #3A4D39;
+    border-color: #3A4D39;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.github-link:hover .github-logo {
+    filter: brightness(0.1); /* Darkens the logo on hover */
+}
+
+.github-logo {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+    background-color: transparent;
+    object-fit: contain;
+}
+
+.github-text {
+    font-size: 1.1rem;
+    font-weight: normal;
+}
