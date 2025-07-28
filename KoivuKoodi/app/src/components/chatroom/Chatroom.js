@@ -10,8 +10,33 @@ function Chatroom() {
     const [userCount, setUserCount] = useState(0);
     const [selectedColor, setSelectedColor] = useState('#2695C9');
 
+    useEffect(() => {
+        // Connect to the '/chat' namespace
+        const newSocket = io('/chat');
+        setSocket(newSocket);
+
+        // Listen for chat messages
+        newSocket.on('chat message', (data) => {
+            setMessages(prevMessages => [...prevMessages, data]);
+        });
+
+        // Listen for user count updates
+        newSocket.on('update user number', (count) => {
+            setUserCount(count);
+        });
+
+        // Cleanup on component unmount
+        return () => {
+            newSocket.close();
+        };
+    }, []);
+
     const sendMessage = (e) => {
         e.preventDefault();
+        if (!socket) {
+            alert('Socket connection not established yet. Please wait a moment and try again.');
+            return;
+        }
         if (nickname.trim() === '' || message.trim() === '') {
             alert('Please enter both a nickname and a message.');
             return;
