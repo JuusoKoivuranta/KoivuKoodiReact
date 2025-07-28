@@ -46,6 +46,40 @@ chatNamespace.on('connection', (socket) => {
     });
 });
 
+// Chess namespace
+const chessNamespace = io.of('/chess');
+chessNamespace.on('connection', (socket) => {
+    console.log('New chess client connected');
+
+    socket.on('playWhite', () => { // Informs the other side of player change
+        socket.broadcast.emit('playWhite');
+    });
+
+    socket.on('playBlack', () => { // Informs the other side of player change
+        socket.broadcast.emit('playBlack');
+    });
+
+    socket.on('start game', () => { // Handling start game event
+        socket.broadcast.emit('start game');
+    });
+
+    socket.on('reset board', () => { // Handling reset board event
+        socket.broadcast.emit('reset board');
+    });
+
+    socket.on('set timer', (minutes) => { // Handling set timer event
+        socket.broadcast.emit('set timer', minutes);
+    });
+
+    socket.on('move piece', (data) => { // Handling click movement event
+        socket.broadcast.emit('move piece', data);
+    });
+
+    socket.on('disconnect', () => {
+        console.log('Chess client disconnected');
+    });
+});
+
 // Start the server
 server.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

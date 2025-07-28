@@ -1,22 +1,40 @@
 import React from 'react';
 
 const ChessBoard = ({ board, selectedPiece, onSquareClick, playWhite }) => {
+  // Create a display order based on whether player is playing white or black
+  // If playing white (playWhite = true): display normally (a1-h8)
+  // If playing black (playWhite = false): display flipped (h8-a1)
+  
+  const getDisplayBoard = () => {
+    if (playWhite) {
+      // Normal order: a8, b8, c8... to a1, b1, c1
+      return board;
+    } else {
+      // Flipped order: h1, g1, f1... to h8, g8, f8
+      return [...board].reverse();
+    }
+  };
+
+  const displayBoard = getDisplayBoard();
+
   return (
-    <div className="chess-board">
-      {board.map((square) => (
+    <div className={`chess-board ${!playWhite ? 'flipped' : ''}`}>
+      {displayBoard.map((square) => (
         <div
           key={square.id}
-          className={`square ${square.color}`}
+          className={`square ${square.color} ${selectedPiece?.id === square.id ? 'selected' : ''}`}
           onClick={() => onSquareClick(square)}
         >
           {square.piece && (
             <img
               src={square.piece.image}
               alt={square.piece.type}
-              className={`chesspiece ${selectedPiece?.id === square.id ? 'selected' : ''}`}
+              className="chesspiece"
             />
           )}
-          <span className="squareId">{square.id}</span>
+          <span className="squareId">
+            {square.id}
+          </span>
         </div>
       ))}
     </div>

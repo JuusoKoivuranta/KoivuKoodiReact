@@ -2,9 +2,7 @@
 .chess-container {
   display: flex;
   flex-direction: row;
-  gap: 20px;
-  padding: 20px;
-  min-height: 100vh;
+  min-height: 105vh;
   background-color: #739072;
 }
 
@@ -15,63 +13,132 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 0;
+  margin: 0;
+}
+
+/* Right panel for move history */
+.right-panel {
+  width: 20%;
+  min-width: 200px;
+  background-color: #3A4D39;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  height: fit-content;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+  top: 10vh;
+  margin-right: 20px;
+}
+
+/* Move History Styles */
+.moveHistory {
+  background-color: var(--nav-background);
+  border-radius: 8px;
+  padding: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.moveHistory::before {
+  content: "Move History";
+  display: block;
+  color: var(--button-background);
+  font-size: 1em;
+  font-weight: bold;
+  margin-bottom: 10px;
+  text-align: center;
+  border-bottom: 1px solid var(--button-background);
+  padding-bottom: 5px;
+}
+
+.madeMoveW,
+.madeMoveB {
+  display: block;
+  padding: 4px 8px;
+  margin: 2px 0;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.8em;
+}
+
+.madeMoveW {
+  background-color: var(--button-background);
+  color: var(--text-color);
+}
+
+.madeMoveB {
+  background-color: var(--secondary-color);
+  color: var(--button-background);
 }
 
 /* Chess board */
 .chess-board {
   width: 80vh;
-  max-width: 800px;
-  aspect-ratio: 1;
-  margin: 0;
+  height: 80vh;
   display: grid;
   grid-template-columns: repeat(8, 1fr);
-  border: 2px solid #333;
-}
-
-.square {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  grid-template-rows: repeat(8, 1fr);
+  border: 3px solid #333;
+  border-radius: 7px;
 }
 
 .square.white {
   background-color: #ECE3CE;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  
 }
 
 .square.black {
   background-color: #3A4D39;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.square.selected {
+  background-color: rgba(255, 255, 0, 0.5) !important;
+  box-shadow: inset 0 0 0 3px #FFD700;
 }
 
 .squareId {
   position: absolute;
-  top: 2px;
-  left: 2px;
-  font-size: 0.8em;
-  color: rgba(0, 0, 0, 0.3);
+  bottom: 0;
+  right: 0;
+  padding-right: 3%;
+  padding-bottom: 3%;
+  font-size: 1.5vh;
+  font-family: Arial, Helvetica, sans-serif;
+  color: black;
+  opacity: 0.7;
 }
 
 /* Navigation Controls */
 .nav-controls {
-  width: 250px;
-  min-width: 250px;
+  width: 20%;
+  min-width: 200px;
   background-color: #3A4D39;
   display: flex;
   flex-direction: column;
-  padding: 20px;
-  gap: 20px;
+  padding: 10px;
+  margin-left: 20px;
+  gap: 10px;
   border-radius: 8px;
   height: fit-content;
+  position: relative;
+  top: 10vh;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .nav-controls h1 {
   background-color: #ECE3CE;
-  padding: 8px 12px;
+  padding: 6px 10px;
   border-radius: 4px;
-  font-size: 1.3em;
+  font-size: 2em;
   font-family: Arial, Helvetica, sans-serif;
   font-weight: normal;
   margin: 0;
@@ -82,13 +149,13 @@
 .control-section {
   background-color: rgba(255, 255, 255, 0.05);
   border-radius: 8px;
-  padding: 15px;
+  padding: 8px;
 }
 
 .control-section h2 {
   color: #ECE3CE;
   font-size: 1.2em;
-  margin: 0 0 10px 0;
+  margin: 0 0 6px 0;
   text-align: left;
   font-weight: normal;
 }
@@ -96,18 +163,18 @@
 .control-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
 }
 
 .control-button {
-  width: 100%;
-  padding: 8px 12px;
+  width: 90%;
+  padding: 4px 8px;
   background-color: #ECE3CE;
   color: #333;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 0.95em;
+  font-size: 1em;
   transition: all 0.2s;
   text-align: left;
 }
@@ -122,57 +189,53 @@
 }
 
 .settings {
-  width: 40px;
-  height: 40px;
   padding: 8px;
-  background-color: #ECE3CE;
+  background-color: var(--button-background);
   border: none;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
   transition: all 0.2s;
+  width: 10vh;
 }
 
 .settings:hover {
-  background-color: #d1c4b3;
+  background-color: var(--secondary-color);
   transform: rotate(45deg);
 }
 
 .settings img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
 }
 
 .settings-section {
   position: relative;
-  height: 40px;
-  margin-top: auto;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Timer styles */
 .timerW,
 .timerB {
-  padding: 10px 20px;
+  padding: 6px 12px;
   background-color: #3A4D39;
   color: #ECE3CE;
   border-radius: 4px;
-  margin: 10px 0;
+  margin: 5px 0;
   font-family: monospace;
-  font-size: 1.2em;
+  font-size: 2em;
 }
 
 /* Chess pieces */
 .chesspiece {
-  width: 90%;
-  height: 90%;
+  width: 95%;
+  height: 95%;
   cursor: pointer;
   transition: transform 0.2s;
+  object-fit: contain;
 }
 
 .chesspiece:hover {
@@ -181,130 +244,6 @@
 
 .chesspiece.selected {
   background-color: rgba(255, 255, 0, 0.3);
-}
-
-/* Navigation Controls */
-.nav-controls {
-  width: 250px;
-  min-width: 250px;
-  background-color: #3A4D39;
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-  gap: 20px;
-  border-radius: 8px;
-  height: fit-content;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.nav-controls h1 {
-  background-color: #ECE3CE;
-  padding: 1vh;
-  border-radius: 0.5vh;
-  font-size: 3vh;
-  font-family: Arial, Helvetica, sans-serif;
-  font-weight: 100;
-  margin: 0;
-  color: black;
-  text-align: center;
-}
-
-.control-section {
-  background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-  padding: 15px;
-}
-
-.control-section h2 {
-  color: #ECE3CE;
-  font-size: 1.2em;
-  margin: 0 0 10px 0;
-  text-align: left;
-  font-weight: normal;
-}
-
-.control-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.control-button {
-  width: 100%;
-  padding: 8px 12px;
-  background-color: #ECE3CE;
-  color: #333;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.95em;
-  transition: all 0.2s;
-  text-align: left;
-}
-
-.control-button:hover {
-  background-color: #d1c4b3;
-  transform: translateY(-1px);
-}
-
-.control-button:active {
-  transform: translateY(0);
-}
-
-.settings {
-  width: 50px;
-  height: 50px;
-  padding: 8px;
-  background-color: #ECE3CE;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.settings:hover {
-  background-color: #d1c4b3;
-}
-
-.settings img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.settings-section {
-  display: flex;
-  justify-content: center;
-}
-
-/* Main game layout */
-.chess-container {
-  display: flex;
-  flex-direction: row;
-  gap: 20px;
-  padding: 20px;
-  min-height: 100vh;
-  background-color: #739072;
-}
-
-/* Game area with board and timers */
-.game-area {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Make sure the game board fits properly */
-.chess-board {
-  width: 80vh;
-  max-width: 800px;
-  aspect-ratio: 1;
-  margin: 0;
 }
 
 /* Button styles */
@@ -331,23 +270,6 @@ button:hover {
   margin: 1vh;
 }
 
-.settings {
-  height: 8vh;
-  width: 8vh;
-  position: absolute;
-  right: 0;
-  margin: 1vh;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.settings img {
-  width: 80%;
-  height: 80%;
-}
-
 /* Game controls */
 .game-controls {
   display: flex;
@@ -355,70 +277,190 @@ button:hover {
   margin-bottom: 20px;
 }
 
-/* Chess board */
-.chess-board {
-  display: grid;
-  grid-template-columns: repeat(8, 10vh);
-  grid-template-rows: repeat(8, 10vh);
-  border: 2px solid #333;
-  position: relative;
-  max-width: 80vh;
-  margin: 0 auto;
+/* Disabled button styles */
+.control-button:disabled {
+  background-color: #a1a1a1 !important;
+  color: #666 !important;
+  cursor: not-allowed !important;
+  opacity: 0.5 !important;
 }
 
-.square {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  border: 0.1vh solid #000;
+.control-button:disabled:hover {
+  background-color: #a1a1a1 !important;
+  transform: none !important;
+}
+
+/* CSS Custom Properties for theming */
+:root {
+  --primary-color: #739072;
+  --secondary-color: #4F6F52;
+  --nav-background: #3A4D39;
+  --button-background: #ECE3CE;
+  --white-square: #ECE3CE;
+  --black-square: #3A4D39;
+  --text-color: #333;
+}
+
+/* Theme overrides using CSS variables */
+.chess-container {
+  background-color: var(--primary-color) !important;
+}
+
+.nav-controls {
+  background-color: var(--nav-background) !important;
+}
+
+.control-button {
+  background-color: var(--button-background) !important;
+  color: var(--text-color) !important;
+}
+
+.control-button:hover {
+  background-color: var(--secondary-color) !important;
+}
+
+.nav-controls h1 {
+  background-color: var(--button-background) !important;
+  color: var(--text-color) !important;
 }
 
 .square.white {
-  background-color: #ECE3CE;
+  background-color: var(--white-square) !important;
 }
 
 .square.black {
-  background-color: #3A4D39;
+  background-color: var(--black-square) !important;
 }
 
-/* Chess pieces */
-.chesspiece {
+.timerW, .timerB {
+  background-color: var(--nav-background) !important;
+}
+
+.right-panel {
+  background-color: var(--nav-background) !important;
+}
+
+.moveHistory {
+  background-color: var(--nav-background) !important;
+}
+
+.moveHistory::before {
+  color: var(--button-background) !important;
+  border-bottom-color: var(--button-background) !important;
+}
+
+.madeMoveW {
+  background-color: var(--button-background) !important;
+  color: var(--text-color) !important;
+}
+
+.madeMoveB {
+  background-color: var(--secondary-color) !important;
+  color: var(--button-background) !important;
+}
+
+.settings {
+  background-color: var(--button-background) !important;
+}
+
+.settings:hover {
+  background-color: var(--secondary-color) !important;
+}
+
+/* Settings sidebar */
+.sidebar {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: var(--nav-background);
+  color: var(--button-background);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  min-width: 200px;
+}
+
+.sidebar h2 {
+  margin: 0 0 15px 0;
+  color: var(--button-background);
+  text-align: center;
+}
+
+.sidebar button {
+  display: block;
   width: 100%;
-  height: 100%;
-  object-fit: contain;
+  margin: 8px 0;
+  padding: 10px;
+  background-color: var(--button-background);
+  color: var(--text-color);
+  border: none;
+  border-radius: 4px;
   cursor: pointer;
+  transition: background-color 0.2s;
 }
 
-.chesspiece.selected {
-  background-color: rgba(255, 255, 0, 0.3);
+.sidebar button:hover {
+  background-color: var(--secondary-color);
+  color: var(--button-background);
 }
 
-/* Square IDs */
-.squareId {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  font-size: 1.5vh;
-  color: #666;
+/* Responsive design */
+@media (max-width: 1000px) {
+  .chess-container {
+    flex-direction: column;
+    gap: 10px;
+    padding: 8px;
+  }
+  
+  .game-area {
+    max-width: 100%;
+  }
+  
+  .chess-board {
+    width: min(95vw, 80vh);
+    height: min(95vw, 80vh);
+    max-width: 800px;
+    max-height: 800px;
+  }
+  
+  .nav-controls {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 8px;
+  }
+  
+  .control-section {
+    flex: 1;
+    min-width: 150px;
+  }
+  
+  .right-panel {
+    width: 100%;
+    max-height: 250px;
+    order: 3;
+  }
 }
 
-/* Timers */
-.timerB,
-.timerW {
-  position: absolute;
-  padding: 1vh;
-  background-color: #4F6F52;
-  color: white;
-  font-family: Arial, Helvetica, sans-serif;
-  border-radius: 0.5vh;
-}
-
-.timerB {
-  top: -40px;
-  right: 0;
-}
-
-.timerW {
-  bottom: -40px;
-  right: 0;
+@media (max-width: 768px) {
+  .chess-board {
+    width: 98vw;
+    height: 98vw;
+    max-width: 600px;
+    max-height: 600px;
+  }
+  
+  .nav-controls {
+    flex-direction: column;
+  }
+  
+  .control-section {
+    min-width: auto;
+  }
+  
+  .right-panel {
+    max-height: 200px;
+  }
 }

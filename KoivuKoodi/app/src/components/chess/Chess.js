@@ -9,6 +9,7 @@ import NavControls from './components/NavControls';
 import { isValidMove as validateMove } from './utils/moveValidation';
 
 const Chess = () => {
+  const [socket, setSocket] = useState(null);
   const [gameState, setGameState] = useState(false);
   const [playWhite, setPlayWhite] = useState(true);
   const [board, setBoard] = useState(initializeBoard());
@@ -23,14 +24,55 @@ const Chess = () => {
   const [moves, setMoves] = useState([]);
 
   useEffect(() => {
-    const socket = io('/chess');
+    const newSocket = io('/chess');
+    setSocket(newSocket);
     
-    socket.on('move piece', handleSocketMove);
-    socket.on('playWhite', () => setPlayWhite(true));
-    socket.on('playBlack', () => setPlayWhite(false));
-    socket.on('start game', () => setGameState(true));
+    newSocket.on('connect', () => {
+      console.log('Connected to chess namespace');
+    });
+    
+    newSocket.on('move piece', handleSocketMove);
+    
+    newSocket.on('playWhite', () => {
+      console.log('Received playWhite event');
+      setPlayWhite(true);
+    });
+    
+    newSocket.on('playBlack', () => {
+      console.log('Received playBlack event');
+      setPlayWhite(false);
+    });
+    
+    newSocket.on('start game', () => {
+      console.log('Received start game event');
+      setGameState(true);
+    });
+    
+    newSocket.on('reset board', () => {
+      console.log('Received reset board event');
+      setGameState(false); // Stop the game
+      setBoard(initializeBoard());
+      setMoves([]);
+      setMoveCounter(1);
+      setSelectedPiece(null);
+      setTimers({
+        white: 600,
+        black: 600,
+        currentPlayer: 'white'
+      });
+    });
+    
+    newSocket.on('set timer', (minutes) => {
+      console.log('Received set timer event:', minutes);
+      setGameState(false); // Stop the game when timer is changed
+      setTimers({
+        white: minutes * 60,
+        black: minutes * 60,
+        currentPlayer: 'white'
+      });
+    });
 
-    return () => socket.disconnect();
+    return () => newSocket.disconnect();
   }, []);
 
   function initializeBoard() {
@@ -68,28 +110,63 @@ const Chess = () => {
   }
 
   const handlePieceClick = (square) => {
-    if (!gameState) return;
+    console.log('Square clicked:', square.id, 'Game state:', gameState, 'Piece:', square.piece?.type);
+    
+    if (!gameState) {
+      console.log('Game not started yet');
+      return;
+    }
 
     if (selectedPiece) {
+      console.log('Already have selected piece:', selectedPiece.id);
       // Handle move
       if (isValidMove(selectedPiece, square)) {
+        console.log('Valid move from', selectedPiece.id, 'to', square.id);
         movePiece(selectedPiece, square);
         setSelectedPiece(null);
       } else {
+        console.log('Invalid move, deselecting piece');
         setSelectedPiece(null);
       }
-    } else if (square.piece && 
-              ((moveCounter % 2 === 1 && square.piece.color === 'White') || 
-               (moveCounter % 2 === 0 && square.piece.color === 'Black'))) {
-      setSelectedPiece(square);
+    } else if (square.piece) {
+      // Check if it's the correct player's turn
+      const isWhiteTurn = moveCounter % 2 === 1;
+      const isPieceWhite = square.piece.color === 'White';
+      
+      console.log('Turn check - White turn:', isWhiteTurn, 'Piece is white:', isPieceWhite);
+      
+      // Allow piece selection if it matches the current turn
+      if ((isWhiteTurn && isPieceWhite) || (!isWhiteTurn && !isPieceWhite)) {
+        setSelectedPiece(square);
+        console.log('Selected piece:', square.piece.type, 'at', square.id);
+      } else {
+        console.log('Not the right turn for this piece');
+      }
+    } else {
+      console.log('Clicked empty square');
     }
   };
 
   const isValidMove = (from, to) => {
-    return validateMove(from, to, board);
+    if (!from.piece) return false;
+    // For now, allow any move except moving to a square with same color piece
+    if (to.piece && to.piece.color === from.piece.color) {
+      return false;
+    }
+    return true; // Temporarily allow all valid moves for testing
+    // return validateMove(from.piece, from, to);
   };
 
   const movePiece = (from, to) => {
+    const moveData = {
+      from: from.id,
+      to: to.id,
+      piece: from.piece
+    };
+
+    // Create move notation for history
+    const moveNotation = `${from.piece.type}${from.id}-${to.id}`;
+
     setBoard(prevBoard => {
       const newBoard = [...prevBoard];
       const fromIndex = newBoard.findIndex(s => s.id === from.id);
@@ -105,8 +182,14 @@ const Chess = () => {
       return newBoard;
     });
     
+    setMoves(prevMoves => [...prevMoves, moveNotation]);
     setMoveCounter(prev => prev + 1);
     switchTimer();
+
+    // Emit move to other players
+    if (socket) {
+      socket.emit('move piece', { ...moveData, moveNotation });
+    }
   };
 
   const switchTimer = () => {
@@ -116,29 +199,114 @@ const Chess = () => {
     }));
   };
 
+  const handleTimerUpdate = (color, newTime) => {
+    setTimers(prev => ({
+      ...prev,
+      [color]: newTime
+    }));
+  };
+
   const handleSocketMove = (data) => {
-    // Handle socket moves here
+    setBoard(prevBoard => {
+      const newBoard = [...prevBoard];
+      const fromIndex = newBoard.findIndex(s => s.id === data.from);
+      const toIndex = newBoard.findIndex(s => s.id === data.to);
+      
+      if (fromIndex !== -1 && toIndex !== -1) {
+        if (newBoard[toIndex].piece) {
+          // Handle capture
+        }
+        
+        newBoard[toIndex].piece = newBoard[fromIndex].piece;
+        newBoard[fromIndex].piece = null;
+      }
+      
+      return newBoard;
+    });
+    
+    if (data.moveNotation) {
+      setMoves(prevMoves => [...prevMoves, data.moveNotation]);
+    }
+    setMoveCounter(prev => prev + 1);
+    switchTimer();
   };
 
   return (
     <div className="chess-container">
       <NavControls
         gameState={gameState}
-        onPlayWhite={() => setPlayWhite(true)}
-        onPlayBlack={() => setPlayWhite(false)}
+        onPlayWhite={() => {
+          console.log('Play White clicked');
+          if (!gameState) {
+            setPlayWhite(true);
+          } else {
+            console.log('Cannot change color during active game');
+          }
+          // Don't emit to other players - this is a personal preference
+          // if (socket) {
+          //   console.log('Emitting playWhite event');
+          //   socket.emit('playWhite');
+          // }
+        }}
+        onPlayBlack={() => {
+          console.log('Play Black clicked');
+          if (!gameState) {
+            setPlayWhite(false);
+          } else {
+            console.log('Cannot change color during active game');
+          }
+          // Don't emit to other players - this is a personal preference
+          // if (socket) {
+          //   console.log('Emitting playBlack event');
+          //   socket.emit('playBlack');
+          // }
+        }}
         onSettingsClick={() => setIsSettingsOpen(!isSettingsOpen)}
-        onStartGame={() => setGameState(true)}
+        onStartGame={() => {
+          console.log('Start Game clicked');
+          if (!gameState) {
+            setGameState(true);
+            if (socket) {
+              console.log('Emitting start game event');
+              socket.emit('start game');
+            }
+          } else {
+            console.log('Game is already started');
+          }
+        }}
         onResetBoard={() => {
+          console.log('Reset Board clicked');
+          setGameState(false); // Stop the game
           setBoard(initializeBoard());
           setMoves([]);
           setMoveCounter(1);
-        }}
-        onSetTimeFormat={(minutes) => {
+          setSelectedPiece(null);
           setTimers({
-            white: minutes * 60,
-            black: minutes * 60,
+            white: 600,
+            black: 600,
             currentPlayer: 'white'
           });
+          if (socket) {
+            console.log('Emitting reset board event');
+            socket.emit('reset board');
+          }
+        }}
+        onSetTimeFormat={(minutes) => {
+          console.log('Set Timer clicked:', minutes);
+          if (!gameState) {
+            setGameState(false); // Stop the game when changing timer
+            setTimers({
+              white: minutes * 60,
+              black: minutes * 60,
+              currentPlayer: 'white'
+            });
+            if (socket) {
+              console.log('Emitting set timer event:', minutes);
+              socket.emit('set timer', minutes);
+            }
+          } else {
+            console.log('Cannot change timer during active game');
+          }
         }}
       />
 
@@ -147,6 +315,7 @@ const Chess = () => {
           className="timerB"
           time={timers.black}
           isActive={timers.currentPlayer === 'black' && gameState}
+          onTimeUpdate={(newTime) => handleTimerUpdate('black', newTime)}
         />
         
         <ChessBoard
@@ -160,16 +329,28 @@ const Chess = () => {
           className="timerW"
           time={timers.white}
           isActive={timers.currentPlayer === 'white' && gameState}
+          onTimeUpdate={(newTime) => handleTimerUpdate('white', newTime)}
         />
+      </div>
 
+      <div className="right-panel">
         <MoveHistory moves={moves} />
       </div>
 
       <Settings
         isOpen={isSettingsOpen}
         onThemeChange={(theme) => {
-          document.documentElement.style.setProperty('--primary-color', theme[0]);
-          // Add more theme changes here
+          // Apply theme colors to CSS custom properties
+          const root = document.documentElement;
+          root.style.setProperty('--primary-color', theme[0]);
+          root.style.setProperty('--secondary-color', theme[1]);
+          root.style.setProperty('--nav-background', theme[2]);
+          root.style.setProperty('--button-background', theme[3]);
+          root.style.setProperty('--white-square', theme[4]);
+          root.style.setProperty('--black-square', theme[5]);
+          root.style.setProperty('--text-color', theme[6] || '#333');
+          
+          console.log('Theme changed to:', theme);
         }}
       />
     </div>

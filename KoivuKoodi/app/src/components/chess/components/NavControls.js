@@ -16,7 +16,15 @@ const NavControls = ({
       <section className="control-section">
         <h2>Play Controls</h2>
         <div className="control-group">
-          <button onClick={onStartGame} className="control-button">
+          <button 
+            onClick={onStartGame} 
+            className="control-button"
+            disabled={gameState}
+            style={{ 
+              opacity: gameState ? 0.5 : 1, 
+              cursor: gameState ? 'not-allowed' : 'pointer' 
+            }}
+          >
             Start Game
           </button>
           <button 
@@ -32,10 +40,26 @@ const NavControls = ({
       <section className="control-section">
         <h2>Player Colors</h2>
         <div className="control-group">
-          <button onClick={onPlayWhite} className="control-button">
+          <button 
+            onClick={onPlayWhite} 
+            className="control-button"
+            disabled={gameState}
+            style={{ 
+              opacity: gameState ? 0.5 : 1, 
+              cursor: gameState ? 'not-allowed' : 'pointer' 
+            }}
+          >
             Play White
           </button>
-          <button onClick={onPlayBlack} className="control-button">
+          <button 
+            onClick={onPlayBlack} 
+            className="control-button"
+            disabled={gameState}
+            style={{ 
+              opacity: gameState ? 0.5 : 1, 
+              cursor: gameState ? 'not-allowed' : 'pointer' 
+            }}
+          >
             Play Black
           </button>
         </div>
@@ -44,13 +68,37 @@ const NavControls = ({
       <section className="control-section">
         <h2>Time Controls</h2>
         <div className="control-group">
-          <button onClick={() => onSetTimeFormat(1)} className="control-button">
+          <button 
+            onClick={() => onSetTimeFormat(1)} 
+            className="control-button"
+            disabled={gameState}
+            style={{ 
+              opacity: gameState ? 0.5 : 1, 
+              cursor: gameState ? 'not-allowed' : 'pointer' 
+            }}
+          >
             1 Minute
           </button>
-          <button onClick={() => onSetTimeFormat(5)} className="control-button">
+          <button 
+            onClick={() => onSetTimeFormat(5)} 
+            className="control-button"
+            disabled={gameState}
+            style={{ 
+              opacity: gameState ? 0.5 : 1, 
+              cursor: gameState ? 'not-allowed' : 'pointer' 
+            }}
+          >
             5 Minutes
           </button>
-          <button onClick={() => onSetTimeFormat(10)} className="control-button">
+          <button 
+            onClick={() => onSetTimeFormat(10)} 
+            className="control-button"
+            disabled={gameState}
+            style={{ 
+              opacity: gameState ? 0.5 : 1, 
+              cursor: gameState ? 'not-allowed' : 'pointer' 
+            }}
+          >
             10 Minutes
           </button>
         </div>
