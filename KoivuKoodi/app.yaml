@@ -1,1 +1,29 @@
 runtime: nodejs20
+
+env_variables:
+  NODE_ENV: production
+
+handlers:
+  # Security headers for static files
+  - url: /static
+    static_dir: app/build/static
+    secure: always
+    redirect_http_response_code: 301
+    http_headers:
+      Strict-Transport-Security: "max-age=31536000; includeSubDomains; preload"
+      X-Content-Type-Options: "nosniff"
+      X-Frame-Options: "DENY"
+      X-XSS-Protection: "1; mode=block"
+      Referrer-Policy: "strict-origin-when-cross-origin"
+      Permissions-Policy: "camera=(), microphone=(), geolocation=(), gyroscope=(), magnetometer=(), payment=(), usb=(), display-capture=(), fullscreen=(self)"
+  
+  # All other requests
+  - url: /.*
+    script: auto
+    secure: always
+    redirect_http_response_code: 301
+
+# Force HTTPS
+automatic_scaling:
+  min_instances: 1
+  max_instances: 10

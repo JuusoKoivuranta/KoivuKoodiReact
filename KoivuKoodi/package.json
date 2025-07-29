@@ -3,13 +3,17 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "NODE_ENV=development node server.js",
+    "prod": "NODE_ENV=production node server.js",
+    "deploy": "gcloud app deploy"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "express": "^4.19.2",
+    "helmet": "^8.1.0",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1"
   },

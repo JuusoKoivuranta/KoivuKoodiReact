@@ -9,6 +9,7 @@ const About: React.FC = () => {
                 <h1>About Page</h1>
                 <p>A hobby project for learning how to use and program ReactJS :)</p>
                 <p>GitHub Copilot Pro was used in this project.</p>
+                <p>Started in June 2024.</p>
                 <p>Made by Juuso Koivuranta.</p>
                 
                 <a href="https://github.com/JuusoKoivuranta/KoivuKoodiReact" 
