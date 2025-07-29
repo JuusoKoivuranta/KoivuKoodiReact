@@ -2,7 +2,7 @@ import React from 'react';
 import { FaGithub } from 'react-icons/fa';
 import './About.css';
 
-const About = () => {
+const About: React.FC = () => {
     return (
         <div className='about-page-container'>
             <div className='about-main'>

@@ -1,9 +1,19 @@
 import React from 'react';
 
-const NavControls = ({ 
+interface NavControlsProps {
+  onPlayWhite: () => void;
+  onPlayBlack: () => void;
+  onThemeToggle: () => void;
+  onStartGame: () => void;
+  onResetBoard: () => void;
+  onSetTimeFormat: (minutes: number) => void;
+  gameState: boolean;
+}
+
+const NavControls: React.FC<NavControlsProps> = ({ 
   onPlayWhite, 
   onPlayBlack, 
-  onSettingsClick,
+  onThemeToggle,
   onStartGame,
   onResetBoard,
   onSetTimeFormat,
@@ -104,9 +114,9 @@ const NavControls = ({
         </div>
       </section>
 
-      <section className="control-section settings-section">
-        <button className="settings" onClick={onSettingsClick}>
-          <img src={process.env.PUBLIC_URL + "/images/gameplay/cogwheel.png"} alt="Settings" />
+      <section className="control-section theme-section">
+        <button className="theme-toggle" onClick={onThemeToggle}>
+          <img src={process.env.PUBLIC_URL + "/images/gameplay/cogwheel.png"} alt="Theme Settings" />
         </button>
       </section>
     </div>

@@ -1,6 +1,25 @@
 import React from 'react';
 
-const ChessBoard = ({ board, selectedPiece, onSquareClick, playWhite }) => {
+interface ChessPiece {
+  type: string;
+  color: string;
+  image: string;
+}
+
+interface Square {
+  id: string;
+  color: string;
+  piece?: ChessPiece;
+}
+
+interface ChessBoardProps {
+  board: Square[];
+  selectedPiece: Square | null;
+  onSquareClick: (square: Square) => void;
+  playWhite: boolean;
+}
+
+const ChessBoard: React.FC<ChessBoardProps> = ({ board, selectedPiece, onSquareClick, playWhite }) => {
   // Create a display order based on whether player is playing white or black
   // If playing white (playWhite = true): display normally (a1-h8)
   // If playing black (playWhite = false): display flipped (h8-a1)
@@ -18,7 +37,7 @@ const ChessBoard = ({ board, selectedPiece, onSquareClick, playWhite }) => {
   const displayBoard = getDisplayBoard();
 
   return (
-    <div className={`chess-board ${!playWhite ? 'flipped' : ''}`}>
+    <div className="chess-board">
       {displayBoard.map((square) => (
         <div
           key={square.id}

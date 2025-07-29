@@ -1,4 +1,14 @@
-export const isValidMove = (piece, from, to) => {
+interface ChessPiece {
+  type: string;
+  color: string;
+}
+
+interface Square {
+  id: string;
+  piece?: ChessPiece;
+}
+
+export const isValidMove = (piece: ChessPiece, from: Square, to: Square): boolean => {
   const fromSquare = from.id;
   const toSquare = to.id;
   const pieceType = piece.type;
@@ -21,7 +31,7 @@ export const isValidMove = (piece, from, to) => {
   }
 };
 
-function isPawnMove(piece, fromSquare, toSquare, existingPiece) {
+function isPawnMove(piece: ChessPiece, fromSquare: string, toSquare: string, existingPiece?: ChessPiece): boolean {
   const startColumn = fromSquare[0];
   const targetColumn = toSquare[0];
   const fromRow = parseInt(fromSquare[1]);
@@ -46,27 +56,27 @@ function isPawnMove(piece, fromSquare, toSquare, existingPiece) {
   return false;
 }
 
-function isRookMove(fromSquare, toSquare) {
+function isRookMove(fromSquare: string, toSquare: string): boolean {
   return fromSquare[0] === toSquare[0] || fromSquare[1] === toSquare[1];
 }
 
-function isKnightMove(fromSquare, toSquare) {
+function isKnightMove(fromSquare: string, toSquare: string): boolean {
   const columnDiff = Math.abs(fromSquare[0].charCodeAt(0) - toSquare[0].charCodeAt(0));
   const rowDiff = Math.abs(parseInt(fromSquare[1]) - parseInt(toSquare[1]));
   return (columnDiff === 2 && rowDiff === 1) || (columnDiff === 1 && rowDiff === 2);
 }
 
-function isBishopMove(fromSquare, toSquare) {
+function isBishopMove(fromSquare: string, toSquare: string): boolean {
   const columnDiff = Math.abs(fromSquare[0].charCodeAt(0) - toSquare[0].charCodeAt(0));
   const rowDiff = Math.abs(parseInt(fromSquare[1]) - parseInt(toSquare[1]));
   return columnDiff === rowDiff;
 }
 
-function isQueenMove(fromSquare, toSquare) {
+function isQueenMove(fromSquare: string, toSquare: string): boolean {
   return isRookMove(fromSquare, toSquare) || isBishopMove(fromSquare, toSquare);
 }
 
-function isKingMove(fromSquare, toSquare) {
+function isKingMove(fromSquare: string, toSquare: string): boolean {
   const columnDiff = Math.abs(fromSquare[0].charCodeAt(0) - toSquare[0].charCodeAt(0));
   const rowDiff = Math.abs(parseInt(fromSquare[1]) - parseInt(toSquare[1]));
   return columnDiff <= 1 && rowDiff <= 1;

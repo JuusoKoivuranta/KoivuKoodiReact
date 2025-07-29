@@ -1,14 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import io from 'socket.io-client';
+import io, { Socket } from 'socket.io-client';
 import './Chatroom.css';
 
-function Chatroom() {
-    const [socket, setSocket] = useState(null);
-    const [nickname, setNickname] = useState('');
-    const [message, setMessage] = useState('');
-    const [messages, setMessages] = useState([]);
-    const [userCount, setUserCount] = useState(0);
-    const [selectedColor, setSelectedColor] = useState('#2695C9');
+interface ChatMessage {
+    nickname: string;
+    message: string;
+    color: string;
+    timestamp?: string;
+}
+
+const Chatroom: React.FC = () => {
+    const [socket, setSocket] = useState<Socket | null>(null);
+    const [nickname, setNickname] = useState<string>('');
+    const [message, setMessage] = useState<string>('');
+    const [messages, setMessages] = useState<ChatMessage[]>([]);
+    const [userCount, setUserCount] = useState<number>(0);
+    const [selectedColor, setSelectedColor] = useState<string>('#2695C9');
 
     useEffect(() => {
         // Connect to the '/chat' namespace
@@ -31,7 +38,7 @@ function Chatroom() {
         };
     }, []);
 
-    const sendMessage = (e) => {
+    const sendMessage = (e: React.FormEvent<HTMLFormElement>): void => {
         e.preventDefault();
         if (!socket) {
             alert('Socket connection not established yet. Please wait a moment and try again.');
@@ -50,7 +57,7 @@ function Chatroom() {
         setMessage('');
     };
 
-    const handleColorChange = (e) => {
+    const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
         setSelectedColor(e.target.value);
     };
 
@@ -60,7 +67,7 @@ function Chatroom() {
 
             <button 
                 className="colorPickerButton"
-                onClick={() => document.getElementById('colorPicker').click()}
+                onClick={() => (document.getElementById('colorPicker') as HTMLInputElement)?.click()}
             >
                 Change Message Background Color
             </button>

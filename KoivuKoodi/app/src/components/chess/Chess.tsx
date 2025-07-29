@@ -1,27 +1,51 @@
 import React, { useState, useEffect } from 'react';
 import './Chess.css';
-import io from 'socket.io-client';
+import io, { Socket } from 'socket.io-client';
 import ChessBoard from './components/ChessBoard';
 import Timer from './components/Timer';
-import Settings from './components/Settings';
+import ThemePanel from './components/ThemePanel';
 import MoveHistory from './components/MoveHistory';
 import NavControls from './components/NavControls';
-import { isValidMove as validateMove } from './utils/moveValidation';
 
-const Chess = () => {
-  const [socket, setSocket] = useState(null);
-  const [gameState, setGameState] = useState(false);
-  const [playWhite, setPlayWhite] = useState(true);
-  const [board, setBoard] = useState(initializeBoard());
-  const [selectedPiece, setSelectedPiece] = useState(null);
-  const [moveCounter, setMoveCounter] = useState(1);
-  const [timers, setTimers] = useState({
+interface ChessPiece {
+  type: string;
+  color: string;
+  image: string;
+}
+
+interface Square {
+  id: string;
+  color: string;
+  piece?: ChessPiece;
+}
+
+interface TimerState {
+  white: number;
+  black: number;
+  currentPlayer: 'white' | 'black';
+}
+
+interface MoveData {
+  from: string;
+  to: string;
+  piece: ChessPiece;
+  moveNotation?: string;
+}
+
+const Chess: React.FC = () => {
+  const [socket, setSocket] = useState<Socket | null>(null);
+  const [gameState, setGameState] = useState<boolean>(false);
+  const [playWhite, setPlayWhite] = useState<boolean>(true);
+  const [board, setBoard] = useState<Square[]>(initializeBoard());
+  const [selectedPiece, setSelectedPiece] = useState<Square | null>(null);
+  const [moveCounter, setMoveCounter] = useState<number>(1);
+  const [timers, setTimers] = useState<TimerState>({
     white: 600, // 10 minutes in seconds
     black: 600,
     currentPlayer: 'white'
   });
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [moves, setMoves] = useState([]);
+  const [isThemePanelOpen, setIsThemePanelOpen] = useState<boolean>(false);
+  const [moves, setMoves] = useState<string[]>([]);
 
   useEffect(() => {
     const newSocket = io('/chess');
@@ -62,7 +86,7 @@ const Chess = () => {
       });
     });
     
-    newSocket.on('set timer', (minutes) => {
+    newSocket.on('set timer', (minutes: number) => {
       console.log('Received set timer event:', minutes);
       setGameState(false); // Stop the game when timer is changed
       setTimers({
@@ -72,13 +96,16 @@ const Chess = () => {
       });
     });
 
-    return () => newSocket.disconnect();
+    return () => {
+      newSocket.disconnect();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function initializeBoard() {
-    const newBoard = [];
+  function initializeBoard(): Square[] {
+    const newBoard: Square[] = [];
     const letters = ["a", "b", "c", "d", "e", "f", "g", "h"];
-    const pieces = {
+    const pieces: { [key: number]: string[] } = {
       1: ['Rook', 'Knight', 'Bishop', 'Queen', 'King', 'Bishop', 'Knight', 'Rook'],
       2: Array(8).fill("Pawn"),
       7: Array(8).fill("Pawn"),
@@ -87,10 +114,9 @@ const Chess = () => {
 
     for (let i = 8; i > 0; i--) {
       for (let j = 0; j < 8; j++) {
-        const square = {
+        const square: Square = {
           id: letters[j] + i,
-          color: (i + j) % 2 === 0 ? 'white' : 'black',
-          piece: null
+          color: (i + j) % 2 === 0 ? 'white' : 'black'
         };
 
         if (pieces[i]) {
@@ -98,7 +124,6 @@ const Chess = () => {
           square.piece = {
             type: pieces[i][j],
             color: pieceColor,
-            id: pieceColor + letters[j] + i,
             image: `/images/pieces/${pieceColor}${pieces[i][j]}.webp`
           };
         }
@@ -109,7 +134,7 @@ const Chess = () => {
     return newBoard;
   }
 
-  const handlePieceClick = (square) => {
+  const handlePieceClick = (square: Square): void => {
     console.log('Square clicked:', square.id, 'Game state:', gameState, 'Piece:', square.piece?.type);
     
     if (!gameState) {
@@ -147,25 +172,24 @@ const Chess = () => {
     }
   };
 
-  const isValidMove = (from, to) => {
+  const isValidMove = (from: Square, to: Square): boolean => {
     if (!from.piece) return false;
     // For now, allow any move except moving to a square with same color piece
     if (to.piece && to.piece.color === from.piece.color) {
       return false;
     }
     return true; // Temporarily allow all valid moves for testing
-    // return validateMove(from.piece, from, to);
   };
 
-  const movePiece = (from, to) => {
-    const moveData = {
+  const movePiece = (from: Square, to: Square): void => {
+    const moveData: MoveData = {
       from: from.id,
       to: to.id,
-      piece: from.piece
+      piece: from.piece!
     };
 
     // Create move notation for history
-    const moveNotation = `${from.piece.type}${from.id}-${to.id}`;
+    const moveNotation = `${from.piece!.type}${from.id}-${to.id}`;
 
     setBoard(prevBoard => {
       const newBoard = [...prevBoard];
@@ -177,7 +201,7 @@ const Chess = () => {
       }
       
       newBoard[toIndex].piece = newBoard[fromIndex].piece;
-      newBoard[fromIndex].piece = null;
+      delete newBoard[fromIndex].piece;
       
       return newBoard;
     });
@@ -199,14 +223,14 @@ const Chess = () => {
     }));
   };
 
-  const handleTimerUpdate = (color, newTime) => {
+  const handleTimerUpdate = (color: 'white' | 'black', newTime: number): void => {
     setTimers(prev => ({
       ...prev,
       [color]: newTime
     }));
   };
 
-  const handleSocketMove = (data) => {
+  const handleSocketMove = (data: MoveData): void => {
     setBoard(prevBoard => {
       const newBoard = [...prevBoard];
       const fromIndex = newBoard.findIndex(s => s.id === data.from);
@@ -218,14 +242,14 @@ const Chess = () => {
         }
         
         newBoard[toIndex].piece = newBoard[fromIndex].piece;
-        newBoard[fromIndex].piece = null;
+        delete newBoard[fromIndex].piece;
       }
       
       return newBoard;
     });
     
     if (data.moveNotation) {
-      setMoves(prevMoves => [...prevMoves, data.moveNotation]);
+      setMoves(prevMoves => [...prevMoves, data.moveNotation!]);
     }
     setMoveCounter(prev => prev + 1);
     switchTimer();
@@ -242,11 +266,6 @@ const Chess = () => {
           } else {
             console.log('Cannot change color during active game');
           }
-          // Don't emit to other players - this is a personal preference
-          // if (socket) {
-          //   console.log('Emitting playWhite event');
-          //   socket.emit('playWhite');
-          // }
         }}
         onPlayBlack={() => {
           console.log('Play Black clicked');
@@ -255,13 +274,8 @@ const Chess = () => {
           } else {
             console.log('Cannot change color during active game');
           }
-          // Don't emit to other players - this is a personal preference
-          // if (socket) {
-          //   console.log('Emitting playBlack event');
-          //   socket.emit('playBlack');
-          // }
         }}
-        onSettingsClick={() => setIsSettingsOpen(!isSettingsOpen)}
+        onThemeToggle={() => setIsThemePanelOpen(!isThemePanelOpen)}
         onStartGame={() => {
           console.log('Start Game clicked');
           if (!gameState) {
@@ -311,34 +325,64 @@ const Chess = () => {
       />
 
       <div className="game-area">
-        <Timer
-          className="timerB"
-          time={timers.black}
-          isActive={timers.currentPlayer === 'black' && gameState}
-          onTimeUpdate={(newTime) => handleTimerUpdate('black', newTime)}
-        />
-        
-        <ChessBoard
-          board={board}
-          selectedPiece={selectedPiece}
-          onSquareClick={handlePieceClick}
-          playWhite={playWhite}
-        />
-        
-        <Timer
-          className="timerW"
-          time={timers.white}
-          isActive={timers.currentPlayer === 'white' && gameState}
-          onTimeUpdate={(newTime) => handleTimerUpdate('white', newTime)}
-        />
+        {playWhite ? (
+          // When playing white: Black timer on top, White timer on bottom
+          <>
+            <Timer
+              className="timerB"
+              time={timers.black}
+              isActive={timers.currentPlayer === 'black' && gameState}
+              onTimeUpdate={(newTime) => handleTimerUpdate('black', newTime)}
+            />
+            
+            <ChessBoard
+              board={board}
+              selectedPiece={selectedPiece}
+              onSquareClick={handlePieceClick}
+              playWhite={playWhite}
+            />
+            
+            <Timer
+              className="timerW"
+              time={timers.white}
+              isActive={timers.currentPlayer === 'white' && gameState}
+              onTimeUpdate={(newTime) => handleTimerUpdate('white', newTime)}
+            />
+          </>
+        ) : (
+          // When playing black: White timer on top, Black timer on bottom
+          <>
+            <Timer
+              className="timerW"
+              time={timers.white}
+              isActive={timers.currentPlayer === 'white' && gameState}
+              onTimeUpdate={(newTime) => handleTimerUpdate('white', newTime)}
+            />
+            
+            <ChessBoard
+              board={board}
+              selectedPiece={selectedPiece}
+              onSquareClick={handlePieceClick}
+              playWhite={playWhite}
+            />
+            
+            <Timer
+              className="timerB"
+              time={timers.black}
+              isActive={timers.currentPlayer === 'black' && gameState}
+              onTimeUpdate={(newTime) => handleTimerUpdate('black', newTime)}
+            />
+          </>
+        )}
       </div>
 
       <div className="right-panel">
         <MoveHistory moves={moves} />
       </div>
 
-      <Settings
-        isOpen={isSettingsOpen}
+      <ThemePanel
+        isOpen={isThemePanelOpen}
+        onClose={() => setIsThemePanelOpen(false)}
         onThemeChange={(theme) => {
           // Apply theme colors to CSS custom properties
           const root = document.documentElement;
@@ -349,6 +393,10 @@ const Chess = () => {
           root.style.setProperty('--white-square', theme[4]);
           root.style.setProperty('--black-square', theme[5]);
           root.style.setProperty('--text-color', theme[6] || '#333');
+          root.style.setProperty('--timer-white-bg', theme[7] || '#ECE3CE');
+          root.style.setProperty('--timer-white-text', theme[8] || '#333');
+          root.style.setProperty('--timer-black-bg', theme[9] || '#3A4D39');
+          root.style.setProperty('--timer-black-text', theme[10] || '#ECE3CE');
           
           console.log('Theme changed to:', theme);
         }}

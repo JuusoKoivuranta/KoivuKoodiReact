@@ -1,6 +1,10 @@
 import React from 'react';
 
-const MoveHistory = ({ moves }) => {
+interface MoveHistoryProps {
+  moves: string[];
+}
+
+const MoveHistory: React.FC<MoveHistoryProps> = ({ moves }) => {
   return (
     <div id="moveHistory" className="moveHistory">
       {moves.map((move, index) => (

@@ -5,10 +5,10 @@ import Home from './components/front-pages/Home';
 import Gallery from './components//gallery/Gallery';
 import Chess from './components/chess/Chess';
 import Chatroom from './components/chatroom/Chatroom';
-import Minesweeper from './components/minesweeper/Minesweeper.tsx';
+import Minesweeper from './components/minesweeper/Minesweeper';
 import About from './components/front-pages/About';
 
-const App = () => {
+const App: React.FC = () => {
 
   return (
     <Router>

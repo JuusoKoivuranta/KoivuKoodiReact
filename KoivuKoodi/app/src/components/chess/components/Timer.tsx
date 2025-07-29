@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from 'react';
 
-const Timer = ({ time, className, isActive, onTimeUpdate }) => {
+interface TimerProps {
+  time: number;
+  className: string;
+  isActive: boolean;
+  onTimeUpdate?: (newTime: number) => void;
+}
+
+const Timer: React.FC<TimerProps> = ({ time, className, isActive, onTimeUpdate }) => {
   const [currentTime, setCurrentTime] = useState(time);
 
   useEffect(() => {
@@ -29,7 +36,7 @@ const Timer = ({ time, className, isActive, onTimeUpdate }) => {
     };
   }, [isActive, currentTime, onTimeUpdate]);
 
-  const formatTime = (seconds) => {
+  const formatTime = (seconds: number): string => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
