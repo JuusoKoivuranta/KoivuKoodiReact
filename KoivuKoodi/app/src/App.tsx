@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import Header from './components/Header';
 import Home from './components/front-pages/Home';
 import Gallery from './components//gallery/Gallery';
@@ -11,8 +11,18 @@ import About from './components/front-pages/About';
 const App: React.FC = () => {
 
   return (
-    <Router>
-      <Header />
+    <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+      <AppContent />
+    </Router>
+  );
+};
+
+const AppContent: React.FC = () => {
+  const location = useLocation();
+  
+  return (
+    <>
+      {location.pathname !== '/' && <Header />}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/gallery" element={<Gallery />} />
@@ -21,7 +31,7 @@ const App: React.FC = () => {
         <Route path="/minesweeper" element={<Minesweeper />} />
         <Route path="/about" element={<About />} />
       </Routes>
-    </Router>
+    </>
   );
 };
 

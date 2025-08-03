@@ -11,7 +11,7 @@ const Home: React.FC = () => {
         
         <div className='grid-container'>
           <Link to="/gallery" className='grid-item'>
-            <div className='item-content'>Gallery</div>
+            <div className='item-content'>Photo Gallery</div>
           </Link>
           <Link to="/chess" className='grid-item'>
             <div className='item-content'>Chess</div>

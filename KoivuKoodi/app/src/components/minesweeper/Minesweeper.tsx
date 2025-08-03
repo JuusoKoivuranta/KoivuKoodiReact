@@ -17,8 +17,6 @@ const Minesweeper: React.FC = () => {
   const [width, setWidth] = useState<string>('');
   const [height, setHeight] = useState<string>('');
   const [mineNum, setMineNum] = useState<string>('');
-  const [assignedMines, setAssignedMines] = useState<Set<string>>(new Set());
-  const [winCondition, setWinCondition] = useState<number>(0);
   const [flagNum, setFlagNum] = useState<number>(0);
   const [gameResult, setGameResult] = useState<string>('');
   const [showResult, setShowResult] = useState<boolean>(false);
@@ -37,9 +35,7 @@ const Minesweeper: React.FC = () => {
     }
 
     setShowResult(false);
-    setAssignedMines(new Set());
     setFlagNum(mineNumber);
-    setWinCondition(mineNumber);
     createBoard(widthNum, heightNum, mineNumber);
   };
 
@@ -77,7 +73,6 @@ const Minesweeper: React.FC = () => {
         minesToPlace--;
       }
     }
-    setAssignedMines(newAssignedMines);
   };
 
   const handleLeftClick = (x: number, y: number): void => {
@@ -154,15 +149,9 @@ const Minesweeper: React.FC = () => {
     if (square.isFlagged) {
       square.isFlagged = false;
       setFlagNum(prev => prev + 1);
-      if (square.isMine) {
-        setWinCondition(prev => prev + 1);
-      }
     } else if (flagNum > 0) {
       square.isFlagged = true;
       setFlagNum(prev => prev - 1);
-      if (square.isMine) {
-        setWinCondition(prev => prev - 1);
-      }
     }
 
     setBoard(newBoard);

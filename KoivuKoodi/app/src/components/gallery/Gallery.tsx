@@ -16,6 +16,8 @@ const Gallery: React.FC = () => {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [imagesLoaded, setImagesLoaded] = useState<boolean>(false);
+  const [loadedImageIds, setLoadedImageIds] = useState<Set<number>>(new Set());
 
   // Fetch images from Firebase Storage
   useEffect(() => {
@@ -57,6 +59,37 @@ const Gallery: React.FC = () => {
   // Close the modal when clicking outside the image or pressing escape
   const closeModal = (): void => setSelectedPhoto(null);
 
+  // Handle individual image load
+  const handleImageLoad = (photoId: number) => {
+    setLoadedImageIds(prev => {
+      const newSet = new Set(prev);
+      newSet.add(photoId);
+      
+      // Check if all images are loaded
+      if (newSet.size === photos.length && photos.length > 0) {
+        setImagesLoaded(true);
+      }
+      
+      return newSet;
+    });
+  };
+
+  // Check if image is already loaded (cached)
+  const handleImageRef = (img: HTMLImageElement | null, photoId: number) => {
+    if (img && img.complete && img.naturalHeight !== 0 && !loadedImageIds.has(photoId)) {
+      // Image is already loaded (cached) and not yet tracked
+      handleImageLoad(photoId);
+    }
+  };
+
+  // Reset image loading state when photos change
+  useEffect(() => {
+    if (photos.length > 0) {
+      setImagesLoaded(false);
+      setLoadedImageIds(new Set());
+    }
+  }, [photos]);
+
   return (
     <div>
       {/* Loading state */}
@@ -76,13 +109,18 @@ const Gallery: React.FC = () => {
       {/* Gallery */}
       {!loading && !error && (
         <div className="gallery">
-          {photos.map(photo => (
+          {photos.map((photo, index) => (
             <img
               key={photo.id}
               src={photo.src}
               alt={photo.description}
               onClick={() => setSelectedPhoto(photo)}
-              className="gallery-photo"
+              onLoad={() => handleImageLoad(photo.id)}
+              ref={(img) => handleImageRef(img, photo.id)}
+              className={`gallery-photo ${imagesLoaded ? 'loaded' : 'loading-image'}`}
+              style={{
+                animationDelay: imagesLoaded ? `${index * 0.1}s` : '0s'
+              }}
             />
           ))}
         </div>
