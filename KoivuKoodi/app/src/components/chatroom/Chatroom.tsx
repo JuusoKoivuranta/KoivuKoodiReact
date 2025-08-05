@@ -16,6 +16,7 @@ const Chatroom: React.FC = () => {
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [userCount, setUserCount] = useState<number>(0);
     const [selectedColor, setSelectedColor] = useState<string>('#2695C9');
+    const messagesEndRef = React.useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         // Connect to the '/chat' namespace
@@ -37,6 +38,11 @@ const Chatroom: React.FC = () => {
             newSocket.close();
         };
     }, []);
+
+    // Auto-scroll to bottom when new messages are added
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [messages]);
 
     const sendMessage = (e: React.FormEvent<HTMLFormElement>): void => {
         e.preventDefault();
@@ -85,6 +91,7 @@ const Chatroom: React.FC = () => {
                         {msg.nickname}: {msg.message}
                     </li>
                 ))}
+                <div ref={messagesEndRef} />
             </ul>
 
             <form className="inputContainer" onSubmit={sendMessage}>

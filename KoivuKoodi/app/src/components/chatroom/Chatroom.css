@@ -29,12 +29,38 @@
     list-style-type: none;
     margin: 0;
     padding: 20px;
-    flex-grow: 1;
+    height: 400px;
     overflow-y: auto;
     background-color: #3A4D39;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     margin-bottom: 20px;
+}
+
+/* Custom scrollbar for WebKit browsers (Chrome, Safari, Edge) */
+.chatroom ul::-webkit-scrollbar {
+    width: 12px;
+}
+
+.chatroom ul::-webkit-scrollbar-track {
+    background: #3A4D39;
+    border-radius: 6px;
+}
+
+.chatroom ul::-webkit-scrollbar-thumb {
+    background: #4F6F52;
+    border-radius: 6px;
+    border: 2px solid #3A4D39;
+}
+
+.chatroom ul::-webkit-scrollbar-thumb:hover {
+    background: #739072;
+}
+
+/* Custom scrollbar for Firefox */
+.chatroom ul {
+    scrollbar-width: thin;
+    scrollbar-color: #4F6F52 #3A4D39;
 }
 
 .chatroom li {
