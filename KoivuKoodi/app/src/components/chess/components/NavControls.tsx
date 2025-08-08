@@ -8,6 +8,7 @@ interface NavControlsProps {
   onResetBoard: () => void;
   onSetTimeFormat: (minutes: number) => void;
   gameState: boolean;
+  userCount: number;
 }
 
 const NavControls: React.FC<NavControlsProps> = ({ 
@@ -17,11 +18,16 @@ const NavControls: React.FC<NavControlsProps> = ({
   onStartGame,
   onResetBoard,
   onSetTimeFormat,
-  gameState 
+  gameState,
+  userCount
 }) => {
   return (
     <div className="nav-controls">
       <h1>Click & Move Chess</h1>
+      
+      <section className="control-section user-count-section">
+        <h2>Connected Users: {userCount}</h2>
+      </section>
       
       <section className="control-section">
         <h2>Play Controls</h2>

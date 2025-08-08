@@ -152,9 +152,12 @@ chatNamespace.on('connection', (socket) => {
 });
 
 // Chess namespace
+let chessUserCount = 0;
 const chessNamespace = io.of('/chess');
 chessNamespace.on('connection', (socket) => {
     console.log('New chess client connected');
+    chessUserCount++;
+    chessNamespace.emit('update user number', chessUserCount); //Updating current number of chess players
 
     socket.on('playWhite', () => { // Informs the other side of player change
         socket.broadcast.emit('playWhite');
@@ -182,6 +185,8 @@ chessNamespace.on('connection', (socket) => {
 
     socket.on('disconnect', () => {
         console.log('Chess client disconnected');
+        chessUserCount--;
+        chessNamespace.emit('update user number', chessUserCount); //Updating current number of chess players
     });
 });
 

@@ -29,7 +29,7 @@
   max-height: 85vh;
   overflow-y: auto;
   position: relative;
-  top: 10vh;
+  top: 7vh;
   margin-right: 20px;
 }
 
@@ -85,6 +85,7 @@
   border-radius: 7px;
 }
 
+/* NEVER TOUCH THIS */
 .square.white {
   background-color: #ECE3CE;
   width: 100%;
@@ -92,6 +93,7 @@
   position: relative;
 }
 
+/* NEVER TOUCH THIS */
 .square.black {
   background-color: #3A4D39;
   width: 100%;
@@ -129,7 +131,7 @@
   border-radius: 8px;
   height: fit-content;
   position: relative;
-  top: 10vh;
+  top: 7vh;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
@@ -157,6 +159,19 @@
   margin: 0 0 6px 0;
   text-align: left;
   font-weight: normal;
+}
+
+/* User count specific styling */
+.user-count-section h2 {
+  text-align: center;
+  background-color: var(--secondary-color) !important;
+  padding: 8px;
+  border-radius: 6px;
+  font-weight: bold;
+  margin: 0;
+  color: var(--button-background) !important;
+  border: 1px solid var(--button-background) !important;
+  transition: all 0.3s ease;
 }
 
 .control-group {

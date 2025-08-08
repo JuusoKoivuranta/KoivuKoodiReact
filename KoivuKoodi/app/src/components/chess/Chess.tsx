@@ -46,6 +46,7 @@ const Chess: React.FC = () => {
   });
   const [isThemePanelOpen, setIsThemePanelOpen] = useState<boolean>(false);
   const [moves, setMoves] = useState<string[]>([]);
+  const [userCount, setUserCount] = useState<number>(0);
 
   useEffect(() => {
     const newSocket = io('/chess');
@@ -94,6 +95,12 @@ const Chess: React.FC = () => {
         black: minutes * 60,
         currentPlayer: 'white'
       });
+    });
+
+    // Listen for user count updates
+    newSocket.on('update user number', (count: number) => {
+      console.log('Received chess user count update:', count);
+      setUserCount(count);
     });
 
     return () => {
@@ -259,6 +266,7 @@ const Chess: React.FC = () => {
     <div className="chess-container">
       <NavControls
         gameState={gameState}
+        userCount={userCount}
         onPlayWhite={() => {
           console.log('Play White clicked');
           if (!gameState) {
