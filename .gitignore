@@ -9,6 +9,11 @@
 # GitHub configuration
 .github/
 
+# Create React App boilerplate (unused)
+KoivuKoodi/app/src/setupTests.ts
+KoivuKoodi/app/src/reportWebVitals.ts
+KoivuKoodi/app/src/App.test.tsx
+
 # Dependencies
 node_modules/
 KoivuKoodi/node_modules/
