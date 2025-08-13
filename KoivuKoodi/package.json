@@ -1,12 +1,14 @@
 {
   "name": "react",
   "version": "1.0.0",
-  "main": "server.js",
+  "main": "dist/server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "NODE_ENV=development node server.js",
-    "prod": "NODE_ENV=production node server.js",
-    "deploy": "gcloud app deploy"
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "set NODE_ENV=development && ts-node src/server.ts",
+    "dev:watch": "set NODE_ENV=development && nodemon --exec ts-node src/server.ts",
+    "prod": "npm run build && set NODE_ENV=production && node dist/server.js",
+    "deploy": "npm run build && gcloud app deploy"
   },
   "keywords": [],
   "author": "",
@@ -17,5 +19,13 @@
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1"
   },
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.2.1",
+    "@types/socket.io": "^3.0.2",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  }
 }

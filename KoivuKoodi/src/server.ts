@@ -1,24 +1,33 @@
-// server/server.js
-const express = require('express');
-const helmet = require('helmet');
-const path = require('path');
-const http = require('http');
-const https = require('https');
-const fs = require('fs');
-const socketIo = require('socket.io');
+// server/server.ts
+import express, { Request, Response, NextFunction } from 'express';
+import helmet from 'helmet';
+import path from 'path';
+import http from 'http';
+import https from 'https';
+import fs from 'fs';
+import { Server as SocketIOServer } from 'socket.io';
+
 const app = express();
 
 // SSL Configuration - only use in production with real certificates
-let server;
-let io;
+let server: http.Server | https.Server;
+let io: SocketIOServer;
 
-const isProduction = process.env.NODE_ENV === 'production';
-const port = process.env.PORT || (isProduction ? 443 : 3000);
-const httpPort = process.env.HTTP_PORT || 80;
+const isProduction: boolean = process.env.NODE_ENV === 'production';
+const port: number = parseInt(process.env.PORT || (isProduction ? '443' : '3000'));
+const httpPort: number = parseInt(process.env.HTTP_PORT || '80');
+
+interface SSLOptions {
+  key: Buffer;
+  cert: Buffer;
+  secureProtocol: string;
+  ciphers: string;
+  honorCipherOrder: boolean;
+}
 
 if (isProduction && process.env.SSL_KEY && process.env.SSL_CERT) {
   // HTTPS server for production
-  const sslOptions = {
+  const sslOptions: SSLOptions = {
     key: fs.readFileSync(process.env.SSL_KEY),
     cert: fs.readFileSync(process.env.SSL_CERT),
     // Modern TLS configuration
@@ -36,7 +45,7 @@ if (isProduction && process.env.SSL_KEY && process.env.SSL_CERT) {
   
   // Create HTTP server for redirect
   const httpApp = express();
-  httpApp.use((req, res) => {
+  httpApp.use((req: Request, res: Response) => {
     res.redirect(301, `https://${req.headers.host}${req.url}`);
   });
   const httpServer = http.createServer(httpApp);
@@ -48,9 +57,9 @@ if (isProduction && process.env.SSL_KEY && process.env.SSL_CERT) {
   server = http.createServer(app);
 }
 
-io = socketIo(server);
+io = new SocketIOServer(server);
 
-let userCount = 0;
+let userCount: number = 0;
 
 // Use Helmet for security headers
 app.use(helmet({
@@ -71,24 +80,11 @@ app.use(helmet({
     maxAge: 31536000,
     includeSubDomains: true,
     preload: true
-  },
-  // Add Permissions Policy
-  permissionsPolicy: {
-    camera: ["'none'"],
-    microphone: ["'none'"],
-    geolocation: ["'none'"],
-    gyroscope: ["'none'"],
-    magnetometer: ["'none'"],
-    payment: ["'none'"],
-    usb: ["'none'"],
-    'display-capture': ["'none'"],
-    'fullscreen': ["'self'"],
-    'web-share': ["'self'"]
   }
-}));
+} as any)); // Using 'as any' because permissionsPolicy is not in current helmet types
 
 // Additional security middleware
-app.use((req, res, next) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
   // Additional custom headers not covered by helmet
   if (req.secure || req.headers['x-forwarded-proto'] === 'https') {
     res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
@@ -116,8 +112,8 @@ app.use((req, res, next) => {
 });
 
 // Serve static files from the React app
-app.use(express.static(path.join(__dirname, './app/build'), {
-  setHeaders: (res, filePath) => {
+app.use(express.static(path.join(__dirname, '../app/build'), {
+  setHeaders: (res: Response, filePath: string) => {
     // Set Cache-Control headers for .html files to no-cache
     if (path.extname(filePath) === '.html') {
       res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
@@ -128,8 +124,8 @@ app.use(express.static(path.join(__dirname, './app/build'), {
 }));
 
 // Handle all GET requests and serve the React app
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, './app/build', 'index.html'));
+app.get('*', (req: Request, res: Response) => {
+  res.sendFile(path.join(__dirname, '../app/build', 'index.html'));
 });
 
 // Chat namespace
@@ -140,7 +136,7 @@ chatNamespace.on('connection', (socket) => {
     chatNamespace.emit('update user number', userCount); //Updating current number of chatters
 
     // Handling chat message event
-    socket.on('chat message', (msg) => {
+    socket.on('chat message', (msg: string) => {
         chatNamespace.emit('chat message', msg);
     });
 
@@ -152,8 +148,16 @@ chatNamespace.on('connection', (socket) => {
 });
 
 // Chess namespace
-let chessUserCount = 0;
+let chessUserCount: number = 0;
 const chessNamespace = io.of('/chess');
+
+interface MoveData {
+    from: string;
+    to: string;
+    piece?: string;
+    [key: string]: any;
+}
+
 chessNamespace.on('connection', (socket) => {
     console.log('New chess client connected');
     chessUserCount++;
@@ -175,11 +179,11 @@ chessNamespace.on('connection', (socket) => {
         socket.broadcast.emit('reset board');
     });
 
-    socket.on('set timer', (minutes) => { // Handling set timer event
+    socket.on('set timer', (minutes: number) => { // Handling set timer event
         socket.broadcast.emit('set timer', minutes);
     });
 
-    socket.on('move piece', (data) => { // Handling click movement event
+    socket.on('move piece', (data: MoveData) => { // Handling click movement event
         socket.broadcast.emit('move piece', data);
     });
 
