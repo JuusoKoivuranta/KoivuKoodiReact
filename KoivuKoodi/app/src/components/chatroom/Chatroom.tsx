@@ -6,7 +6,6 @@ interface ChatMessage {
     nickname: string;
     message: string;
     color: string;
-    timestamp?: string;
 }
 
 const Chatroom: React.FC = () => {

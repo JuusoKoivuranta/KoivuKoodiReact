@@ -6,6 +6,8 @@ import http from 'http';
 import https from 'https';
 import fs from 'fs';
 import { Server as SocketIOServer } from 'socket.io';
+import { setupChatNamespace } from './namespaces/chatNamespace';
+import { setupChessNamespace } from './namespaces/chessNamespace';
 
 const app = express();
 
@@ -58,8 +60,6 @@ if (isProduction && process.env.SSL_KEY && process.env.SSL_CERT) {
 }
 
 io = new SocketIOServer(server);
-
-let userCount: number = 0;
 
 // Use Helmet for security headers
 app.use(helmet({
@@ -128,71 +128,9 @@ app.get('*', (req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, '../app/build', 'index.html'));
 });
 
-// Chat namespace
-const chatNamespace = io.of('/chat');
-chatNamespace.on('connection', (socket) => {
-    console.log('New chat client connected');
-    userCount++;
-    chatNamespace.emit('update user number', userCount); //Updating current number of chatters
-
-    // Handling chat message event
-    socket.on('chat message', (msg: string) => {
-        chatNamespace.emit('chat message', msg);
-    });
-
-    socket.on('disconnect', () => {
-        console.log('Chat client disconnected');
-        userCount--;
-        chatNamespace.emit('update user number', userCount); //Updating current number of chatters
-    });
-});
-
-// Chess namespace
-let chessUserCount: number = 0;
-const chessNamespace = io.of('/chess');
-
-interface MoveData {
-    from: string;
-    to: string;
-    piece?: string;
-    [key: string]: any;
-}
-
-chessNamespace.on('connection', (socket) => {
-    console.log('New chess client connected');
-    chessUserCount++;
-    chessNamespace.emit('update user number', chessUserCount); //Updating current number of chess players
-
-    socket.on('playWhite', () => { // Informs the other side of player change
-        socket.broadcast.emit('playWhite');
-    });
-
-    socket.on('playBlack', () => { // Informs the other side of player change
-        socket.broadcast.emit('playBlack');
-    });
-
-    socket.on('start game', () => { // Handling start game event
-        socket.broadcast.emit('start game');
-    });
-
-    socket.on('reset board', () => { // Handling reset board event
-        socket.broadcast.emit('reset board');
-    });
-
-    socket.on('set timer', (minutes: number) => { // Handling set timer event
-        socket.broadcast.emit('set timer', minutes);
-    });
-
-    socket.on('move piece', (data: MoveData) => { // Handling click movement event
-        socket.broadcast.emit('move piece', data);
-    });
-
-    socket.on('disconnect', () => {
-        console.log('Chess client disconnected');
-        chessUserCount--;
-        chessNamespace.emit('update user number', chessUserCount); //Updating current number of chess players
-    });
-});
+// Setup namespaces
+setupChatNamespace(io);
+setupChessNamespace(io);
 
 // Start the server
 server.listen(port, () => {
