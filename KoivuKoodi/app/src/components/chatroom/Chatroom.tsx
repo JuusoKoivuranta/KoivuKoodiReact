@@ -6,6 +6,7 @@ interface ChatMessage {
     nickname: string;
     message: string;
     color: string;
+    textColor: string;
 }
 
 const Chatroom: React.FC = () => {
@@ -43,6 +44,21 @@ const Chatroom: React.FC = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
+    // Function to determine if a color is dark or light
+    const getTextColor = (backgroundColor: string): string => {
+        // Convert hex to RGB
+        const hex = backgroundColor.replace('#', '');
+        const r = parseInt(hex.substr(0, 2), 16);
+        const g = parseInt(hex.substr(2, 2), 16);
+        const b = parseInt(hex.substr(4, 2), 16);
+        
+        // Calculate luminance using the relative luminance formula
+        const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+        
+        // Return white for dark colors, dark for light colors
+        return luminance > 0.5 ? '#333333' : '#FFFFFF';
+    };
+
     const sendMessage = (e: React.FormEvent<HTMLFormElement>): void => {
         e.preventDefault();
         if (!socket) {
@@ -57,7 +73,8 @@ const Chatroom: React.FC = () => {
         socket.emit('chat message', {
             nickname: nickname,
             message: message,
-            color: selectedColor
+            color: selectedColor,
+            textColor: getTextColor(selectedColor)
         });
         setMessage('');
     };
@@ -86,7 +103,7 @@ const Chatroom: React.FC = () => {
 
             <ul>
                 {messages.map((msg, index) => (
-                    <li key={index} style={{ backgroundColor: msg.color }}>
+                    <li key={index} style={{ backgroundColor: msg.color, color: msg.textColor }}>
                         {msg.nickname}: {msg.message}
                     </li>
                 ))}

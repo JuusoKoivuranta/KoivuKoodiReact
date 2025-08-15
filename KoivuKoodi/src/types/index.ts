@@ -11,4 +11,5 @@ export type ChatMessage = {
   nickname: string;
   message: string;
   color: string;
+  textColor: string;
 }
