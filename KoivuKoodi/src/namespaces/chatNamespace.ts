@@ -1,5 +1,5 @@
 import { Server as SocketIOServer } from 'socket.io';
-import { ChatMessage } from '../types';
+import { ChatMessage } from '../types/serverTypes';
 
 let userCount: number = 0;
 

@@ -1,5 +1,5 @@
 import { Server as SocketIOServer } from 'socket.io';
-import { MoveData } from '../types';
+import { MoveData } from '../types/serverTypes';
 
 let chessUserCount: number = 0;
 
