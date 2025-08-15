@@ -6,6 +6,7 @@ import Timer from './components/Timer';
 import ThemePanel from './components/ThemePanel';
 import MoveHistory from './components/MoveHistory';
 import NavControls from './components/NavControls';
+import { isValidMove as validateMove } from './utils/moveValidation';
 
 interface ChessPiece {
   type: string;
@@ -181,11 +182,9 @@ const Chess: React.FC = () => {
 
   const isValidMove = (from: Square, to: Square): boolean => {
     if (!from.piece) return false;
-    // For now, allow any move except moving to a square with same color piece
-    if (to.piece && to.piece.color === from.piece.color) {
-      return false;
-    }
-    return true; // Temporarily allow all valid moves for testing
+    
+    // Use the proper move validation function
+    return validateMove(from.piece, from, to, board);
   };
 
   const movePiece = (from: Square, to: Square): void => {
