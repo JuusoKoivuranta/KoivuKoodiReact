@@ -152,6 +152,24 @@ const Chess: React.FC = () => {
 
     if (selectedPiece) {
       console.log('Already have selected piece:', selectedPiece.id);
+      
+      // Double-check turn and ownership before allowing move
+      const isWhiteTurn = moveCounter % 2 === 1;
+      const isPieceWhite = selectedPiece.piece?.color === 'White';
+      
+      // Verify the player owns this piece and it's their turn
+      if ((playWhite && !isPieceWhite) || (!playWhite && isPieceWhite)) {
+        console.log('Move blocked: piece ownership violation');
+        setSelectedPiece(null);
+        return;
+      }
+      
+      if ((playWhite && !isWhiteTurn) || (!playWhite && isWhiteTurn)) {
+        console.log('Move blocked: not your turn');
+        setSelectedPiece(null);
+        return;
+      }
+      
       // Handle move
       if (isValidMove(selectedPiece, square)) {
         console.log('Valid move from', selectedPiece.id, 'to', square.id);
@@ -166,15 +184,23 @@ const Chess: React.FC = () => {
       const isWhiteTurn = moveCounter % 2 === 1;
       const isPieceWhite = square.piece.color === 'White';
       
-      console.log('Turn check - White turn:', isWhiteTurn, 'Piece is white:', isPieceWhite);
+      console.log('Turn check - White turn:', isWhiteTurn, 'Piece is white:', isPieceWhite, 'Player plays white:', playWhite);
       
-      // Allow piece selection if it matches the current turn
-      if ((isWhiteTurn && isPieceWhite) || (!isWhiteTurn && !isPieceWhite)) {
-        setSelectedPiece(square);
-        console.log('Selected piece:', square.piece.type, 'at', square.id);
-      } else {
-        console.log('Not the right turn for this piece');
+      // First check: Can only select pieces of your assigned color
+      if ((playWhite && !isPieceWhite) || (!playWhite && isPieceWhite)) {
+        console.log('Cannot select opponent pieces - you play', playWhite ? 'white' : 'black', 'but piece is', isPieceWhite ? 'white' : 'black');
+        return;
       }
+      
+      // Second check: Can only move when it's your turn
+      if ((playWhite && !isWhiteTurn) || (!playWhite && isWhiteTurn)) {
+        console.log('Not your turn - it is', isWhiteTurn ? 'white' : 'black', 'turn but you play', playWhite ? 'white' : 'black');
+        return;
+      }
+      
+      // Allow piece selection if both checks pass
+      setSelectedPiece(square);
+      console.log('Selected piece:', square.piece.type, 'at', square.id);
     } else {
       console.log('Clicked empty square');
     }
@@ -182,6 +208,22 @@ const Chess: React.FC = () => {
 
   const isValidMove = (from: Square, to: Square): boolean => {
     if (!from.piece) return false;
+    
+    // Check turn and ownership
+    const isWhiteTurn = moveCounter % 2 === 1;
+    const isPieceWhite = from.piece.color === 'White';
+    
+    // Player must own the piece they're trying to move
+    if ((playWhite && !isPieceWhite) || (!playWhite && isPieceWhite)) {
+      console.log('Move validation failed: player does not own this piece');
+      return false;
+    }
+    
+    // It must be the player's turn
+    if ((playWhite && !isWhiteTurn) || (!playWhite && isWhiteTurn)) {
+      console.log('Move validation failed: not player\'s turn');
+      return false;
+    }
     
     // Use the proper move validation function
     return validateMove(from.piece, from, to, board);
