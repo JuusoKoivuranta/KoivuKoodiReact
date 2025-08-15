@@ -11,12 +11,16 @@ export const setupChessNamespace = (io: SocketIOServer): void => {
     chessUserCount++;
     chessNamespace.emit('update user number', chessUserCount); // Updating current number of chess players
 
-    socket.on('playWhite', () => { // Informs the other side of player change
-      socket.broadcast.emit('playWhite');
+    socket.on('playWhite', () => { 
+      // Player chooses to play white - no need to broadcast to others
+      // Each player manages their own color choice locally
+      console.log('Player chose to play white');
     });
 
-    socket.on('playBlack', () => { // Informs the other side of player change
-      socket.broadcast.emit('playBlack');
+    socket.on('playBlack', () => { 
+      // Player chooses to play black - no need to broadcast to others  
+      // Each player manages their own color choice locally
+      console.log('Player chose to play black');
     });
 
     socket.on('start game', () => { // Handling start game event

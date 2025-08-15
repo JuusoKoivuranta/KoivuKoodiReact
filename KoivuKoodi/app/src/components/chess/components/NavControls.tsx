@@ -1,26 +1,85 @@
 import React from 'react';
+import { Socket } from 'socket.io-client';
+import { 
+  emitGameAction, 
+  emitSetTimer 
+} from '../utils/socketUtils';
+import { TimerState } from '../utils/gameLogic';
 
 interface NavControlsProps {
-  onPlayWhite: () => void;
-  onPlayBlack: () => void;
-  onThemeToggle: () => void;
-  onStartGame: () => void;
-  onResetBoard: () => void;
-  onSetTimeFormat: (minutes: number) => void;
+  socket: Socket | null;
   gameState: boolean;
   userCount: number;
+  playWhite: boolean;
+  onGameStateChange: (state: boolean) => void;
+  onPlayWhiteChange: (playWhite: boolean) => void;
+  onBoardReset: () => void;
+  onTimerSet: (timers: TimerState) => void;
+  onThemeToggle: () => void;
 }
 
 const NavControls: React.FC<NavControlsProps> = ({ 
-  onPlayWhite, 
-  onPlayBlack, 
-  onThemeToggle,
-  onStartGame,
-  onResetBoard,
-  onSetTimeFormat,
+  socket,
   gameState,
-  userCount
+  userCount,
+  playWhite,
+  onGameStateChange,
+  onPlayWhiteChange,
+  onBoardReset,
+  onTimerSet,
+  onThemeToggle
 }) => {
+  const handlePlayWhite = () => {
+    console.log('Play White clicked');
+    if (!gameState) {
+      onPlayWhiteChange(true);
+      // Color change is purely local - no socket emission needed
+    } else {
+      console.log('Cannot change color during active game');
+    }
+  };
+
+  const handlePlayBlack = () => {
+    console.log('Play Black clicked');
+    if (!gameState) {
+      onPlayWhiteChange(false);
+      // Color change is purely local - no socket emission needed
+    } else {
+      console.log('Cannot change color during active game');
+    }
+  };
+
+  const handleStartGame = () => {
+    console.log('Start Game clicked');
+    if (!gameState) {
+      onGameStateChange(true);
+      emitGameAction(socket, 'start game');
+    } else {
+      console.log('Game is already started');
+    }
+  };
+
+  const handleResetBoard = () => {
+    console.log('Reset Board clicked');
+    onBoardReset();
+    emitGameAction(socket, 'reset board');
+  };
+
+  const handleSetTimeFormat = (minutes: number) => {
+    console.log('Set Timer clicked:', minutes);
+    if (!gameState) {
+      const newTimers: TimerState = {
+        white: minutes * 60,
+        black: minutes * 60,
+        currentPlayer: 'white'
+      };
+      onTimerSet(newTimers);
+      emitSetTimer(socket, minutes);
+    } else {
+      console.log('Cannot change timer during active game');
+    }
+  };
+
   return (
     <div className="nav-controls">
       <h1>Click & Move Chess</h1>
@@ -33,7 +92,7 @@ const NavControls: React.FC<NavControlsProps> = ({
         <h2>Play Controls</h2>
         <div className="control-group">
           <button 
-            onClick={onStartGame} 
+            onClick={handleStartGame} 
             className="control-button"
             disabled={gameState}
             style={{ 
@@ -45,7 +104,7 @@ const NavControls: React.FC<NavControlsProps> = ({
           </button>
           <button 
             className="control-button"
-            onClick={onResetBoard}
+            onClick={handleResetBoard}
             hidden={!gameState}
           >
             Reset Board
@@ -57,7 +116,7 @@ const NavControls: React.FC<NavControlsProps> = ({
         <h2>Player Colors</h2>
         <div className="control-group">
           <button 
-            onClick={onPlayWhite} 
+            onClick={handlePlayWhite} 
             className="control-button"
             disabled={gameState}
             style={{ 
@@ -68,7 +127,7 @@ const NavControls: React.FC<NavControlsProps> = ({
             Play White
           </button>
           <button 
-            onClick={onPlayBlack} 
+            onClick={handlePlayBlack} 
             className="control-button"
             disabled={gameState}
             style={{ 
@@ -85,7 +144,7 @@ const NavControls: React.FC<NavControlsProps> = ({
         <h2>Time Controls</h2>
         <div className="control-group">
           <button 
-            onClick={() => onSetTimeFormat(1)} 
+            onClick={() => handleSetTimeFormat(1)} 
             className="control-button"
             disabled={gameState}
             style={{ 
@@ -96,7 +155,7 @@ const NavControls: React.FC<NavControlsProps> = ({
             1 Minute
           </button>
           <button 
-            onClick={() => onSetTimeFormat(5)} 
+            onClick={() => handleSetTimeFormat(5)} 
             className="control-button"
             disabled={gameState}
             style={{ 
@@ -107,7 +166,7 @@ const NavControls: React.FC<NavControlsProps> = ({
             5 Minutes
           </button>
           <button 
-            onClick={() => onSetTimeFormat(10)} 
+            onClick={() => handleSetTimeFormat(10)} 
             className="control-button"
             disabled={gameState}
             style={{ 

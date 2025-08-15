@@ -1,12 +1,5 @@
-interface ChessPiece {
-  type: string;
-  color: string;
-}
-
-interface Square {
-  id: string;
-  piece?: ChessPiece;
-}
+// Chess move validation logic
+import { Square, ChessPiece } from './boardUtils';
 
 export const isValidMove = (piece: ChessPiece, from: Square, to: Square, board: Square[]): boolean => {
   const fromSquare = from.id;

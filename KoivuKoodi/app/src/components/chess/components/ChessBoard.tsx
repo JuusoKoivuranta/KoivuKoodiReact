@@ -1,16 +1,5 @@
 import React from 'react';
-
-interface ChessPiece {
-  type: string;
-  color: string;
-  image: string;
-}
-
-interface Square {
-  id: string;
-  color: string;
-  piece?: ChessPiece;
-}
+import { Square } from '../utils/boardUtils';
 
 interface ChessBoardProps {
   board: Square[];
