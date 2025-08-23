@@ -87,12 +87,18 @@ export const useChessGame = () => {
     if (selectedPiece) {
       console.log('Already have selected piece:', selectedPiece.id);
 
-      // Handle move attempt
-      if (canMovePiece(selectedPiece, square, playWhite, moveCounter, board)) {
+      // Check if clicked square has a piece that can be selected by current player
+      if (square.piece && canSelectPiece(square, playWhite, moveCounter, gameState)) {
+        // Player clicked on another of their own pieces - select it directly
+        setSelectedPiece(square);
+        console.log('Selected different own piece:', square.piece.type, 'at', square.id);
+      } else if (canMovePiece(selectedPiece, square, playWhite, moveCounter, board)) {
+        // Valid move attempt
         console.log('Valid move from', selectedPiece.id, 'to', square.id);
         executeMove(selectedPiece, square);
         setSelectedPiece(null);
       } else {
+        // Invalid move or clicked on opponent piece, deselect
         console.log('Invalid move, deselecting piece');
         setSelectedPiece(null);
       }

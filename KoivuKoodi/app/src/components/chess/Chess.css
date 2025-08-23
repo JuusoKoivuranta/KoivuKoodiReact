@@ -102,8 +102,9 @@
 }
 
 .square.selected {
-  background-color: rgba(255, 255, 0, 0.5) !important;
-  box-shadow: inset 0 0 0 3px #FFD700;
+  background-color: rgba(255, 215, 0, 0.8) !important;
+  box-shadow: inset 0 0 0 4px #FF6B35, 0 0 15px rgba(255, 107, 53, 0.7);
+  animation: pulse-selection 1.5s ease-in-out infinite;
 }
 
 .squareId {
@@ -272,7 +273,12 @@
 }
 
 .chesspiece.selected {
-  background-color: rgba(255, 255, 0, 0.3);
+  background-color: rgba(255, 215, 0, 0.6);
+  border-radius: 50%;
+  transform: scale(1.15);
+  box-shadow: 0 0 20px rgba(255, 107, 53, 0.8);
+  z-index: 10;
+  position: relative;
 }
 
 /* Disabled button styles */
@@ -516,5 +522,18 @@
   
   .right-panel {
     max-height: 200px;
+  }
+}
+
+/* Pulse animation for selected pieces */
+@keyframes pulse-selection {
+  0% {
+    box-shadow: inset 0 0 0 4px #FF6B35, 0 0 15px rgba(255, 107, 53, 0.7);
+  }
+  50% {
+    box-shadow: inset 0 0 0 4px #FFD700, 0 0 25px rgba(255, 215, 0, 0.9);
+  }
+  100% {
+    box-shadow: inset 0 0 0 4px #FF6B35, 0 0 15px rgba(255, 107, 53, 0.7);
   }
 }
